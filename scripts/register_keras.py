@@ -91,17 +91,17 @@ data down to a single company.
 #f_fn = CompanyFilter(company_code='company_code', company='ACME')
 
 k_fn = ForecastKerasModel(features=['dummy'])
-df = entity.exec_pipeline(m_fn, k_fn, register=True)
-df.head(1).transpose()
+#df = entity.exec_pipeline(m_fn, k_fn, register=True)
+#df.head(1).transpose()
 '''
 The 12 hours of historical data we loaded  won't keep these widgets
 happy for very long. IoT Platform Analytics performs calculations on new data
 received, so if we add a stage to the pipeline that generates new data each time
 the pipeline runs, we can keep our widgets well fed with new data.
 '''
-#g_fn = EntityDataGenerator(dummy_items=['temp'])
-#df = entity.exec_pipeline(g_fn, m_fn, a_fn, f_fn)
-#df.head(1).transpose()
+g_fn = EntityDataGenerator(dummy_items=['temp'])
+df = entity.exec_pipeline(g_fn, m_fn, k_fn, register=True)
+df.head(1).transpose()
 '''
 When this pipeline executed, it added more data to the widgets input table
 and then completed the tranform and filter stages.

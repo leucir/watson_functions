@@ -2,6 +2,9 @@ from iotfunctions.preprocessor import BaseTransformer
 from iotfunctions.ui import UIFunctionOutSingle, UISingle
 from keras.models import load_model
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
 
 PACKAGE_URL = 'git+https://github.com/leucir/watson_functions.git@'
 
@@ -35,7 +38,9 @@ class ForecastKerasModel(BaseTransformer):
 
         df_final[self.output_name] = predict_results[0][1]
 
-        print(df_final)
+        logger.info('********************************')
+        logger.info(df_final)
+        logger.info('********************************')
 
         '''
         if (predict_results is not None):
