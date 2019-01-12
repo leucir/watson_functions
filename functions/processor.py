@@ -4,20 +4,15 @@ from iotfunctions.preprocessor import BaseTransformer
 
 class MyCustomFunction(BaseTransformer):
   '''
-  Help text here
+  Mutiply value by 3.14
   '''
-  url = PACKAGE_URL
 
-  def _init(self,
-    input_item,
-    output_item - 'output_item'
-    ):
+  def __init__(self, input_item, output_item):
     self.input_item = input_item
     self.output_item = output_item
-    super()._init_()
+    super().__init__()
 
   def execute(self, df):
-    df = df.copy()
-    df[self.output_item] = df[self.input_item]*3.41
-
-    return df
+    df_new = df.copy()
+    df_new[self.output_item] = df[self.input_item]*3.41
+    return df_new
