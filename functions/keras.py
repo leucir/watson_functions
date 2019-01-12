@@ -27,8 +27,12 @@ class ForecastKerasModel(BaseTransformer):
     def execute(self, df):
         df_final = df.copy()
 
+        #retrieve from COS
+
+        #store in a tempfile
+
         #Load function from file system for now
-        model = load_model('../models/base_model_LSTM64_LSTM32_Dropout0.375240min_new')
+        model = load_model('./models/base_model_LSTM64_LSTM32_Dropout0.375240min_new')
 
         #randomize inputs
         #Shape of (1,n,m) is defined to make sure the results are in one dimenstion
