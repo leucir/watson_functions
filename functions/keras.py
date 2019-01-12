@@ -14,8 +14,8 @@ class ForecastKerasModel(BaseTransformer):
     Predict a Keras model from inside the pipeline
     '''
 
-    def __init__(self, features, output_item='prediction'):
-        self.output_name = output_item
+    def __init__(self, features, prediction='prediction'):
+        self.output_name = prediction
         super().__init__()
 
         self.features = features
