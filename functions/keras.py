@@ -35,6 +35,8 @@ class ForecastKerasModel(BaseTransformer):
 
         df_final[self.output_name] = predict_results[0][1]
 
+        print(df_final)
+
         '''
         if (predict_results is not None):
             count = 1
