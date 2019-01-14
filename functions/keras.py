@@ -49,6 +49,7 @@ class ForecastKerasModel(BaseTransformer):
         logger.info('********************************')
         logger.info(df_final)
         logger.info('********************************')
+        '''
 
         '''
         if (predict_results is not None):
@@ -57,7 +58,6 @@ class ForecastKerasModel(BaseTransformer):
                 outputname = self.output_name + '_' + str(count)
                 df_final[outputname] = row
                 count +=1
-        '''
 
         '''
 
