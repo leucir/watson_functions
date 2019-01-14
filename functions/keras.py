@@ -35,6 +35,7 @@ class ForecastKerasModel(BaseTransformer):
         import os
         cwd = os.getcwd()
 
+        '''
         model = load_model(cwd +'/models/base_model_LSTM64_LSTM32_Dropout0.375240min_new')
 
         #randomize inputs
@@ -58,7 +59,11 @@ class ForecastKerasModel(BaseTransformer):
                 count +=1
         '''
 
+        '''
+
         return df_final
+
+
 
     def _getMetadata(self, df=None, new_df=None, inputs=None, outputs=None, constants=None):
         '''
