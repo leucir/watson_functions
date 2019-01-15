@@ -2,6 +2,7 @@ import datetime as dt
 import json
 import os
 import pandas as pd
+import tempfile
 from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, func
 from functions.keras import ForecastKerasModel
 from functions.processor import MyCustomFunction
@@ -90,7 +91,24 @@ data down to a single company.
 #a_fn = IoTAlertOutOfRange(input_item='double_temp', lower_threshold=-5, upper_threshold=5)
 #f_fn = CompanyFilter(company_code='company_code', company='ACME')
 
-k_fn = ForecastKerasModel(features=['dummy'])
+#retrieve local model file and open it for reading as binary
+rel_path = 'models/base_model_LSTM64_LSTM32_Dropout0.375240min_new' #relative path for the model
+script_dir = os.path.dirname(__file__) #absolute dir the script is in
+abs_file_path = os.path.join(script_dir, rel_path)
+model_file = open(abs_file_path, 'rb')
+
+#create bucket on COS to store the model
+bucket_name = credentials['tennant_id'] + '-' + 'models'
+db.cos_create_bucket(bucket=bucket_name)
+
+#store model on COS
+db.cos_save(persisted_object=model_file.read(),
+            filename='base_model_LSTM64_LSTM32_Dropout0.375240min_new',
+            bucket=bucket_name,
+            binary=True)
+
+
+k_fn = ForecastKerasModel(dummy=['dummy'])
 #df = entity.exec_pipeline(m_fn, k_fn, register=True)
 #df.head(1).transpose()
 '''
