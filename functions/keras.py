@@ -36,8 +36,12 @@ class ForecastKerasModel(BaseTransformer):
         file_name = 'base_model_LSTM64_LSTM32_Dropout0.375240min_new'
         bucket_name = db.tenant_id + '-' + 'models'
 
+        logger.info('bucket_name %s'% bucket_name)
+        
         #load model from COS
         model_cos_file = db.cos_load(filename=file_name, bucket=bucket_name, binary=True)
+
+
 
         #store in a tempfile in order to be loaded by Keras
         with tempfile.NamedTemporaryFile(delete=True) as temp:
