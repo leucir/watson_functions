@@ -62,7 +62,8 @@ class ForecastKerasModel(BaseTransformer):
 
         return df_final
 
-    def _getMetadata(self, df=None, new_df=None, inputs=None, outputs=None, constants=None):
+    @classmethod
+    def build_ui(cls):
         '''
         Preload function has no dataframe in or out so standard _getMetadata() does not work
         '''
@@ -87,3 +88,6 @@ class ForecastKerasModel(BaseTransformer):
                                                      description='Returns a prediction value').to_metadata()
 
         return (inputs, outputs)
+
+    def _getMetadata(self, df=None, new_df=None, inputs=None, outputs=None, constants=None):
+        return self.build_ui()
