@@ -34,7 +34,7 @@ class ForecastKerasModel(BaseTransformer):
         #set model file name and bucket name
         #both should match the names defined when the model was created and stored
         file_name = 'base_model_LSTM64_LSTM32_Dropout0.375240min_new'
-        bucket_name = db.tenant_id + '-' + 'models'
+        bucket_name = db.tenant_id + '-analytics-' + 'models'
 
         logger.info('bucket_name %s'% bucket_name)
 

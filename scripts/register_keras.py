@@ -98,7 +98,7 @@ abs_file_path = os.path.join(script_dir, rel_path)
 model_file = open(abs_file_path, 'rb')
 
 #create bucket on COS to store the model
-bucket_name = credentials['tennant_id'] + '-' + 'models'
+bucket_name = credentials['tennant_id'] + '-analytics-' + 'models'
 db.cos_create_bucket(bucket=bucket_name)
 
 #store model on COS
