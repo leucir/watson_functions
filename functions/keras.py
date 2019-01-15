@@ -29,7 +29,7 @@ class ForecastKerasModel(BaseTransformer):
         df_final = df.copy()
 
         #main object to get access to DB, Messaging and infrastructure components
-        db = self.get_entity_type().db
+        db = self._entity_type.db
 
         #set model file name and bucket name
         #both should match the names defined when the model was created and stored
@@ -37,11 +37,9 @@ class ForecastKerasModel(BaseTransformer):
         bucket_name = db.tenant_id + '-' + 'models'
 
         logger.info('bucket_name %s'% bucket_name)
-        
+
         #load model from COS
         model_cos_file = db.cos_load(filename=file_name, bucket=bucket_name, binary=True)
-
-
 
         #store in a tempfile in order to be loaded by Keras
         with tempfile.NamedTemporaryFile(delete=True) as temp:
