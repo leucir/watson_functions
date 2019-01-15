@@ -8,7 +8,7 @@ import tempfile
 
 logger = logging.getLogger(__name__)
 
-PACKAGE_URL = 'git+https://github.com/leucir/watson_functions.git@'
+PACKAGE_URL = 'git+https://github.com/leucir/watson_functions.git'
 
 
 class ForecastKerasModel(BaseTransformer):
