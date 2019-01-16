@@ -18,6 +18,9 @@ class ForecastKerasModel(BaseTransformer):
 
     def __init__(self, dummy, predict1='predict1', predict2='predict2', predict3='predict3', predict4='predict4'):
         super().__init__()
+
+        self.url = PACKAGE_URL
+
         self.predict1 = predict1
         self.predict2 = predict2
         self.predict3 = predict3

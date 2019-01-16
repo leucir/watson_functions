@@ -1,19 +1,11 @@
-import datetime as dt
 import json
 import os
-import pandas as pd
-import tempfile
-from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, func
+from sqlalchemy import Column, Float
 from functions.keras import ForecastKerasModel
-from functions.processor import MyCustomFunction
 
-from iotfunctions.preprocessor import MultiplyByTwo, CompanyFilter, EntityDataGenerator
-from iotfunctions.bif import IoTAlertOutOfRange
-from iotfunctions.preprocessor import BaseTransformer
-from iotfunctions.bif import IoTExpression
-from iotfunctions.metadata import EntityType, make_sample_entity
+from iotfunctions.preprocessor import EntityDataGenerator
+from iotfunctions.metadata import EntityType
 from iotfunctions.db import Database
-from iotfunctions.estimator import SimpleAnomaly
 
 # replace with a credentials dictionary or provide a credentials file
 with open('credentials.json', encoding='utf-8') as F:
@@ -59,6 +51,8 @@ object that will contain entity data
 After creating an EntityType you will need to register it so that it visible in the UI.
 '''
 entity.register()
+
+
 '''
 Entities can get pretty lonely without data. You can feed your entity data by
 writing directly to the entity table or you can cheat and generate data.
@@ -67,39 +61,26 @@ writing directly to the entity table or you can cheat and generate data.
 entity.generate_data(days=0.5, drop_existing=True)
 df = db.read_table(table_name=entity_name, schema=db_schema)
 df.head()
-'''
-We now have 12 hours of historical data. We can use it to do some calculations.
-The calculations will be placed into a container called a pipeline. The 
-pipeline is constructed from multiple stages. Each stage performs a transforms
-the data. Let's multiply create a new "double_temp" by multiplying "temp" by 2.
-'''
 
-m_fn = MyCustomFunction(input_item='speed', output_item='speed_pi')
-#df = entity.exec_pipeline(m_fn)
-df.head(1).transpose()
+
 
 '''
-The execute() method retrieves entity data and carries out the transformations.
-By specifying 'to_csv = True', we also csv output dumped at the end of 
-each stage. This is useful for testing. 
-'register=true' took care of function registration so the MultiplyByTwo 
-function will be available in the ui.
-You can use the outputs of one calculation in another. To demonstrate this
-we will add an alert on "double_temp" and while we are at, filter the
-data down to a single company.
+To retrieve the model when the predictions function will execute, 
+we are storing the model in a object storage bucket.
+In a production environment, the model will be trained and stored on object storage using a different approach.
+This sample is considering a model already trained and serialized.
 '''
-#a_fn = IoTAlertOutOfRange(input_item='double_temp', lower_threshold=-5, upper_threshold=5)
-#f_fn = CompanyFilter(company_code='company_code', company='ACME')
-
-#retrieve local model file and open it for reading as binary
+#model file is loaded in memory
 rel_path = 'models/base_model_LSTM64_LSTM32_Dropout0.375240min_new' #relative path for the model
 script_dir = os.path.dirname(__file__) #absolute dir the script is in
 abs_file_path = os.path.join(script_dir, rel_path)
 model_file = open(abs_file_path, 'rb')
 
+
 #create bucket on COS to store the model
 bucket_name = credentials['tennant_id'] + '-analytics-' + 'models'
 db.cos_create_bucket(bucket=bucket_name)
+
 
 #store model on COS
 db.cos_save(persisted_object=model_file.read(),
@@ -108,9 +89,24 @@ db.cos_save(persisted_object=model_file.read(),
             binary=True)
 
 
+'''
+We now have 12 hours of historical data. We can use it to do some calculations.
+The calculations will be placed into a container called a pipeline. The 
+pipeline is constructed from multiple stages. Each stage performs a transforms
+the data. 
+
+
+The execute() method retrieves entity data and carries out the transformations.
+By specifying 'to_csv = True', we also csv output dumped at the end of 
+each stage. This is useful for testing. 
+'register=true' took care of function registration so the ForecastKerasModel 
+function will be available in the ui.
+You can use the outputs of one calculation in another. This function is receiving a dummy value as input,
+and will generate four predictions as outputs. The output definitions are declared in the function class.
+'''
 k_fn = ForecastKerasModel(dummy=['dummy'])
-#df = entity.exec_pipeline(m_fn, k_fn, register=True)
-#df.head(1).transpose()
+
+
 '''
 The 12 hours of historical data we loaded  won't keep these widgets
 happy for very long. IoT Platform Analytics performs calculations on new data
@@ -118,14 +114,14 @@ received, so if we add a stage to the pipeline that generates new data each time
 the pipeline runs, we can keep our widgets well fed with new data.
 '''
 g_fn = EntityDataGenerator(dummy_items=['temp'])
-df = entity.exec_pipeline(g_fn, m_fn, k_fn, register=True)
-df.head(1).transpose()
+
+
 '''
 When this pipeline executed, it added more data to the widgets input table
 and then completed the tranform and filter stages.
 
 To register all of the functions tested, use register = True
 '''
-#df = entity.exec_pipeline(g_fn, m_fn, a_fn, f_fn, register=True)
-#df.head(1).transpose()
+df = entity.exec_pipeline(g_fn, k_fn, register=True)
+df.head(1).transpose()
 
