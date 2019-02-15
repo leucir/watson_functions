@@ -63,11 +63,6 @@ class ForecastKerasModel(BaseTransformer):
         df_final[self.predict3] = predict_results[0][2]
         df_final[self.predict4] = predict_results[0][3]
 
-        status = self._entity_type.db.write_frame(df, table_name='df_test',
-                                                  version_db_writes=False,
-                                                  if_exists='replace',
-                                                  schema=self._entity_type._db_schema,
-                                                  timestamp_col=self._entity_type._timestamp_col)
         return df_final
 
     @classmethod
